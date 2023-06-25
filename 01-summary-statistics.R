@@ -15,6 +15,8 @@ setwd("C:/Users/sclau/Documents/stats-with-R")
 # Read the pizzas csv file
 pizzas <- read.csv("Pizza+Place+Sales/pizza_sales/pizzas.csv")
 
+# Mean and Median
+
 # Filter for small
 small_price <- pizzas %>%
   filter(size == 'S')
@@ -48,15 +50,24 @@ pizzas %>%
   summarize(mean_price = mean(price),
             median_price = median(price))
 
-# Function to calculate the mode
-calculate_mode <- function(x) {
-  freq_table <- table(x)
-  mode <- as.numeric(names(freq_table)[freq_table == max(freq_table)])
-  return(mode)
-}
+# Mean vs Median
 
-# Calculate the mode of medium_price$price
-mode_value <- calculate_mode(medium_price$price)
+# Read the S&P 500 csv file
+sp500 <- read.csv("S&P+500+Stock+Prices+2014-2017.csv/S&P 500 Stock Prices 2014-2017.csv")
 
-# Print the mode
-print(mode_value)
+sp500 %>%
+  # Create histogram of price
+  ggplot(aes(close)) +
+  geom_histogram()
+
+# Q: How do you thing the mean is compared to the median with the histogram?
+
+sp500 %>%
+  # Get mean_close and median_close
+  summarize(mean_close = mean(close),
+            median_close = median(close))
+
+# A: Mean is greater than the Median because the data is skewed to the right. 
+# Extreme outliers on the right are pulling the Mean to have a greater value.
+
+
