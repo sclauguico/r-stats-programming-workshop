@@ -70,4 +70,10 @@ sp500 %>%
 # A: Mean is greater than the Median because the data is skewed to the right. 
 # Extreme outliers on the right are pulling the Mean to have a greater value.
 
+# Q: When to use mean and median?
+
+# A:
+# Use the mean when you have normally distributed data or when you want to capture the overall average value. 
+# Use the median when you have skewed data, outliers, or when you want a measure that is less affected by extreme values.
+
 
