@@ -1,10 +1,10 @@
 order_details_id,order_id,pizza_id,quantity
 1,1,hawaiian_m,1
-2,2,classic_dlx_m,1
-3,2,five_cheese_l,1
-4,2,ital_supr_l,1
-5,2,mexicana_m,1
-6,2,thai_ckn_l,1
+2,,classic_dlx_m,1
+3,,five_cheese_l,1
+4,,ital_supr_l,1
+5,,mexicana_m,1
+6,,thai_ckn_l,1
 7,3,ital_supr_m,1
 8,3,prsc_argla_l,1
 9,4,ital_supr_m,1
