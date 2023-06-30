@@ -11,6 +11,9 @@ install.packages("ggplot2")
 library(dplyr) # for functions
 library(tidyverse)
 
+wd <- getwd()
+setwd("C:/Users/sclau/Documents/r-stats-programming-workshop/2-r-statistics-fundamentals/4-r-hypothesis-testing/02-two-sample-and-ANOVA-tests")
+
 # Read the customer churn csv file
 customer_churn <- read.csv("telecom_customer_churn.csv")
 
@@ -24,12 +27,12 @@ mean_values <- customer_churn %>%
   summarise(mean_Total_Revenue = mean(Total.Revenue))
 
 # View the result
-mean_values
+print(mean_values)
 
-# Access mean value for "Stayed"
+# Get the mean value for "Stayed"
 xbar_stayed <- mean_values$mean_Total_Revenue[mean_values$Customer.Status == "Stayed"]
 
-# Access mean value for "Churned"
+# Get the mean value for "Churned"
 xbar_churned <- mean_values$mean_Total_Revenue[mean_values$Customer.Status == "Churned"]
 
 
@@ -41,10 +44,10 @@ std_values <- customer_churn %>%
 # View the result
 std_values
 
-# Access standard deviation value for "Started"
+# Get the standard deviation value for "Started"
 s_stayed <- std_values$sd_Total_Revenue[std_values$Customer.Status == "Stayed"]
 
-# Access standard deviation value for "Churned"
+# Get the standard deviation value for "Churned"
 s_churned <- std_values$sd_Total_Revenue[std_values$Customer.Status == "Churned"]
 
 # Calculate the sample size using dplyr
@@ -69,15 +72,15 @@ n_stayed <- sample_size$n[sample_size$Customer.Status == "Stayed"]
 n_churned <- sample_size$n[sample_size$Customer.Status == "Churned"]
 
 
-# The hypothesis test for determining if there is a difference between the means of two populations uses a different type of test statistic to the z-scores you saw in Chapter one. It's called "t", and can be calculated from three values from each sample using this equation.
-# 
-#  
-#  
-#  
-# 
-# While trying to determine why some shipments are late, you may wonder if the weight of the shipments that were late is different from the weight of the shipments that were on time. The late_shipments dataset has been split into a "yes" group, where late == "Yes" and a "no" group where late == "No". The weight of the shipment is given in the weight_kilograms variable.
-# 
-# For convenience, the sample means for the two groups are available as xbar_no and xbar_yes. The sample standard deviations are s_no and s_yes. The sample sizes are n_no and n_yes.
+# The hypothesis test for determining if there is a difference between the means of two populations uses 
+# a different type of test statistic to the z-scores. It's called "t", 
+# and can be calculated from three values from each sample using this equation.
+
+# While trying to determine why some customers are churned, you may wonder if the weight of the shipments that were 
+# late is different from the weight of the shipments that were on time. The late_shipments dataset has been split into a "yes" group, where late == "Yes" and a "no" group where late == "No". The weight of the shipment is given in the weight_kilograms variable.
+
+# For convenience, the sample means for the two groups are available as xbar_no and xbar_yes. 
+# The sample standard deviations are s_no and s_yes. The sample sizes are n_no and n_yes.
 
 # Calculate the numerator of the test statistic
 numerator <- xbar_stayed - xbar_churned

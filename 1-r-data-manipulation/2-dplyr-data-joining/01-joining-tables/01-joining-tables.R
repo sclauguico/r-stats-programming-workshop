@@ -32,6 +32,8 @@ order_and_details <- order %>%
 
 print(order_and_details)
 
+
+
 ordered_pizzas <- order_and_details %>% 
   inner_join(pizza, by = "pizza_id")
 
