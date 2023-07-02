@@ -11,7 +11,7 @@ Character ID,Character Name,Species,Gender,House,Patronus,Wand (Wood),Wand (Core
 10,Neville Longbottom,Human,Male,Gryffindor,,Cherry,Unicorn Hair
 11,Remus Lupin,Werewolf,Male,Gryffindor,Wolf,Cypress,Unicorn Hair
 12,Draco Malfoy,Human,Male,Slytherin,,Hawthorn,Unicorn Hair
-13,Alastor Moody,Human,Male,,,,
+13,Alastor Moody,Human,Male,Hufflepuff,,,
 14,Fred Weasley,Human,Male,Gryffindor,,,
 15,Dolores Umbridge,Human,Female,Slytherin,Cat,Birch,Dragon Heartstring
 16,Arthur Weasley,Human,Male,Gryffindor,Weasel,,
@@ -45,7 +45,7 @@ Character ID,Character Name,Species,Gender,House,Patronus,Wand (Wood),Wand (Core
 44,Peter Pettigrew,Human,Male,Gryffindor,,Chestnut,Dragon Heartstring
 45,Lily Potter,Human,Female,Gryffindor,Doe,Willow,
 46,Oliver Wood,Human,Male,Gryffindor,,,
-47,Nearly Headless Nick,Ghost,Human,Gryffindor,,,
+47,Nearly Headless Nick,Ghost,Male,Gryffindor,,,
 48,Kreacher,House Elf,Male,,,,
 49,Igor Karkaroff,Human,Male,,,,
 50,Rolanda Hooch,Human,Female,,,,

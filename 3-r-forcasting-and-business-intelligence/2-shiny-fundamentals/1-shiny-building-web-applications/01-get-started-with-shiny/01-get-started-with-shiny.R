@@ -75,31 +75,103 @@ shinyApp(ui = ui, server = server)
 
 
 
-
 characters <- read.csv("Harry_Potter_Movies/Characters.csv", fileEncoding = "UTF-8")
 
-# Creating the user interface (UI) for the Shiny app
+# UI
+ui <- fluidPage(
+  selectInput("house", "Select House", choices = unique(characters$House))  # Dropdown to select a house
+)
+
+# Server
+server <- function(input, output, session) {
+  
+}
+
+# Run the Shiny app
+shinyApp(ui = ui, server = server)
+
+
+
+
+
+
+
+# UI
+ui <- fluidPage(
+  selectInput("house", "Select House", choices = unique(characters$House))  # Dropdown to select a house
+)
+
+# Server
+server <- function(input, output, session) {
+  output$plot <- renderPlot({
+    ggplot()  # Placeholder for the actual plot generation code
+  })
+}
+
+# Run the Shiny app
+shinyApp(ui = ui, server = server)
+
+
+
+
+
+
+
+
+# UI
 ui <- fluidPage(
   titlePanel("Harry Potter Character Explorer"),
   sidebarLayout(
     sidebarPanel(
       selectInput("house", "Select House", choices = unique(characters$House)),  # Dropdown to select a house
-      selectInput("gender", "Select Gender", choices = unique(characters$Gender)),  # Dropdown to select a gender
-      selectInput("species", "Select Species", choices = unique(characters$Species))  # Dropdown to select a species
     ),
-    mainPanel(plotOutput("trend"))
+    mainPanel(plotOutput("plot"))
   )
 )
 
-# Defining the server function, which handles the server-side computations and interactions
+# Server
 server <- function(input, output, session) {
-  output$trend <- renderPlot({
-    # CODE BELOW: Update to display a line plot based on the selected filters
-    filtered_data <- subset(characters, House == input$house & Gender == input$gender & Species == input$species)
-    ggplot(filtered_data) +
-      geom_line(aes(x = x_axis, y = y_axis, color = House))  # Replace x_axis and y_axis with the appropriate fields from your dataset
+  output$plot <- renderPlot({
+    ggplot()  # Placeholder for the actual plot generation code
   })
 }
 
-# Creating the Shiny app by combining the UI and server functions
+# Run the Shiny app
 shinyApp(ui = ui, server = server)
+
+
+
+
+
+
+# UI
+ui <- fluidPage(
+  titlePanel("Harry Potter Character Explorer"),
+  sidebarLayout(
+    sidebarPanel(
+      selectInput("house", "Select House", choices = unique(characters$House)),  # Dropdown to select a house
+    ),
+    mainPanel(plotOutput("plot"))
+  )
+)
+
+# Server
+server <- function(input, output, session) {
+  output$plot <- renderPlot({
+    filtered_data <- subset(characters, House == input$house)
+    ggplot(filtered_data) +
+      geom_bar(aes(x = Gender, fill = House), position = "dodge") +
+      labs(x = "Gender", y = "Count")  # Update x-axis and y-axis labels as needed
+  })
+  
+  output$gender <- renderText({
+    filtered_data <- subset(characters, House == input$house)
+    unique(filtered_data$Gender)
+  })
+}
+
+# Run the Shiny app
+shinyApp(ui = ui, server = server)
+
+
+
