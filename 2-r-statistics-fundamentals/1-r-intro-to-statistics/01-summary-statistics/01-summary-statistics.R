@@ -101,7 +101,6 @@ sp500 %>%
             median_close = median(close))
 
 
-
 # Mean vs Median
 sp500 %>%
   # Create histogram of close
