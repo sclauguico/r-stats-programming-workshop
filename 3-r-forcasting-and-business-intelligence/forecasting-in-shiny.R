@@ -1,9 +1,9 @@
-install.packages(c("tidyverse", "dplyr", "magrittr", "ggplot2", "lubridate", "broom", "tidymodels", "modeltime", "modeltime.ensemble", "modeltime.resample", "timetk"))
+install.packages(c("tidyverse", "dplyr", "magrittr", "ggplot2", "lubrishippedDate", "broom", "tidymodels", "modeltime", "modeltime.ensemble", "modeltime.resample", "timetk"))
 library(tidyverse)
 library(dplyr)
 library(magrittr)
 library(ggplot2)
-library(lubridate)
+library(lubrishippedDate)
 library(broom)
 library(tidymodels)
 library(timetk)
@@ -36,9 +36,9 @@ dim(northwind_traders)
 northwind_traders <- northwind_traders %>%
   mutate(total_order_sales = unitPrice * quantity)
 
-# northwind_traders <- mutate(northwind_traders, date = as.Date("orderDate", format = "%d/%m/%Y"))
-# northwind_traders <- mutate(northwind_traders, date = as.Date("requiredDate", format = "%d/%m/%Y"))
-# northwind_traders <- mutate(northwind_traders, date = as.Date("shippedDate", format = "%d/%m/%Y"))
+# northwind_traders <- mutate(northwind_traders, shippedDate = as.shippedDate("ordershippedDate", format = "%d/%m/%Y"))
+# northwind_traders <- mutate(northwind_traders, shippedDate = as.shippedDate("requiredshippedDate", format = "%d/%m/%Y"))
+# northwind_traders <- mutate(northwind_traders, shippedDate = as.shippedDate("shippedDate", format = "%d/%m/%Y"))
 
 northwind_traders <- northwind_traders %>%
   mutate(
@@ -75,7 +75,7 @@ full_data_tbl <- northwind_traders %>%
   select(shipperID, shippedDate, total_order_sales) %>%
   group_by(shipperID) %>%
   future_frame (
-    .date_var = shippedDate,
+    .shippedDate_var = shippedDate,
     .length_out = FORECAST_HORIZON,
     .bind_data = TRUE
   ) %>%
@@ -102,4 +102,110 @@ data_prepared_tbl %>%
 future_tbl <- full_data_tbl %>%
   filter(is.na(total_order_sales))
 
+# Panel Data Splitting
+splits <- data_prepared_tbl %>%
+  time_series_split(
+    shippedDate_var = shippedDate,
+    assess = FORECAST_HORIZON,
+    cumulative = TRUE
+  )
 
+
+315 / 30
+
+1840
+
+
+
+
+# 5.0 PREPROCESSOR
+
+library(tidymodels)
+
+# Create recipe specification
+recipe_spec_1 <- recipe(total_order_sales ~ ., data = training(splits)) %>%
+  step_timeseries_signature(shippedDate) %>%
+  step_rm(matches("(.iso$)|(.xts$)|(day)|(hour)|(minute)|(second)|(am.pm)")) %>%
+  step_normalize(shippedDate_index.num, shippedDate_year) %>%
+  step_mutate(shippedDate_week = factor(shippedDate_week, ordered = TRUE)) %>%
+  step_dummy(all_nominal(), one_hot = TRUE)
+
+# Prepare and summarize the recipe
+recipe_spec_1 %>%
+  prep() %>%
+  juice() %>%
+  glimpse()
+
+# UpshippedDate the role of the "shippedDate" variable
+recipe_spec_2 <- recipe_spec_1 %>%
+  update_role("shippedDate", new_role = "ID")
+
+recipe_spec_1 %>%
+  prep() %>%
+  summary()
+
+# Prepare and summarize the upshippedDated recipe
+recipe_spec_2 %>%
+  prep() %>%
+  summary()
+
+
+#6.0 MODELS---
+#Prophet w/ Regressors 
+
+# Fit Prophet model
+wflw_fit_prophet <- workflow() %>%
+  add_model(prophet_reg() %>% set_engine("prophet")) %>%
+  add_recipe(recipe_spec_1) %>%
+  fit(training(splits))
+
+# Fit XGBoost model
+wflw_fit_xgboost <- workflow() %>%
+  add_model(boost_tree(mode = "regression") %>% set_engine("xgboost")) %>%
+  add_recipe(recipe_spec_2) %>%
+  fit(training(splits))
+
+library(tidymodels)
+
+# Install 'ranger' package
+install.packages("ranger")
+
+
+# Fit Random Forest model
+wflw_fit_rf <- workflow() %>%
+  add_model(rand_forest(mode = "regression") %>% set_engine("ranger")) %>%
+  add_recipe(recipe_spec_2) %>%
+  fit(training(splits))
+
+library(tidymodels)
+library(kernlab)
+
+# Fit SVM model with RBF kernel
+wflw_fit_svm <- workflow() %>%
+  add_model(svm_rbf(mode = "regression") %>% set_engine("kernlab")) %>%
+  add_recipe(recipe_spec_2) %>%
+  fit(training(splits))
+
+
+# Fit Prophet Boost model
+wflw_fit_prophet_boost <- workflow() %>%
+  add_model(prophet_boost(
+    seasonality_daily = FALSE,
+    seasonality_weekly = FALSE,
+    seasonality_yearly = FALSE
+  ) %>% set_engine("prophet_xgboost")) %>%
+  add_recipe(recipe_spec_1) %>%
+  fit(training(splits))
+
+
+# 7.0 MODELTIME Table 
+
+submodels_tbl <- modeltime_table (
+  wflw_fit_prophet,
+  wflw_fit_xgboost,
+  wflw_fit_rf,
+  wflw_fit_svm,
+  wflw_fit_prophet_boost
+)
+
+#
