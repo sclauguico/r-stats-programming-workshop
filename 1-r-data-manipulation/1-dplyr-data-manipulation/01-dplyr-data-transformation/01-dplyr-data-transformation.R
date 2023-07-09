@@ -1,4 +1,4 @@
-# Install the dplyr packages 
+# Install the dplyr package
 install.packages("dplyr")
 
 # Dplyr is a grammar of data manipulation in R that provides a consistent set of verbs 
@@ -14,17 +14,8 @@ setwd("C:/Users/sclau/Documents/r-stats-programming-workshop/1-r-data-manipulati
 # Read the space mission csv file
 space_mission <- read.csv("Space+Missions/space_missions.csv")
 
-
-# --- 1. SELECT ---
-
-# Not all fields in a given table are needed in the analysis. 
-# To prepare the data, you can simply SELECT the columns that you need based on your use cases.
-
 # Take a look at the dataset
-head(space_mission)
-
-# Other way of taking a look at the dataset
-view(space_mission)
+View(space_mission)
 
 # Determine the dimension of the dataset
 dim(space_mission)
@@ -32,8 +23,35 @@ dim(space_mission)
 # Take a glimpse of the data type
 glimpse(space_mission)
 
+
+# 0 --- PRELIMINARY DATA TRANSFORMATION ---
+# A. RENAMING VARIABLES
+space_mission <- space_mission %>% # shift + ctrl + m
+  rename("SpaceShuttleStatus" = "RocketStatus") # First argument is the new column name, the second one is the original column
+
+# Other way of taking a look at the dataset
+head(space_mission)
+
+# B. REORDER VARIABLES
+space_mission_reordered <- space_mission %>%
+  select(Date, Mission, MissionStatus, Rocket, Price)
+
+# C. CHANGE A VARIABLE TYPE
+# Take a look at the class of MissionStatus column
+class(space_mission$MissionStatus)
+# Further verify the class of MissionStatus
+glimpse(space_mission)
+
+# Change the variable type or class as factor
+space_mission$MissionStatus <- as.factor(space_mission$MissionStatus) # factors are a data type that represent categorical variables.
+# Further verify the NEW class of MissionStatus
+glimpse(space_mission)
+
+# D. OBTAIN UNIQUE DATA
+unique(space_mission$Company)
+
 # A tibble is a modern data frame in R that is designed to be easy to read, print, and manipulate.
-# 
+
 # Tibbles are a subclass of data frames, so they inherit all of the functionality of data frames.
 # Tibbles have a few additional features that make them more useful for data analysis, such as:
 # They do not automatically convert strings to factors.(In R, factors are a data type that represent categorical variables. Factors have a predefined set of unique values, and R assigns an integer level to each unique value.)
@@ -55,17 +73,27 @@ glimpse(space_mission)
 # dbl refers to a double data type. A double is a double-precision floating point number, 
 # which means that it can represent a wide range of values with a high degree of accuracy
 
+
+
+# --- 1. SELECT ---
+
+# Not all fields in a given table are needed in the analysis. 
+# To prepare the data, you can simply SELECT the columns that you need based on your use cases.
+
 space_mission %>%
   # Add the verb select to select the columns: Date, Rocket, Mission, MissionStatus, Price
-  select(Date, Rocket, Mission, MissionStatus, Price) # These 4 columns were selected as compared to all the columns you have seen using the glimpse function
+  select(Date, Rocket, Mission, MissionStatus, Price) # These 5 columns were selected as compared to all the columns you have seen using the glimpse function
 
 # Can you save the tibble with the selected columns as space_mission selected?
 space_mission_selected <- space_mission %>%
-  select(Date, Rocket, Mission, MissionStatus, Price)
+  select(Company, Date, Rocket, Mission, MissionStatus, Price)
 
 
+# You can also select using indexes for obtaining consecutive columns
+names(space_mission) # For getting the column names
 
-
+space_mission %>%
+  select(3:7)
 
 # --- 2. FILTER and ARRANGE ---
 
@@ -82,7 +110,9 @@ space_mission_selected %>%
 # What were the missions that spend more than $120M on rockets?
 space_mission_selected %>%
   # Add the verb filter to obtain the samples with rockets amounting above $120M
-  filter(Price > 120)
+  filter(Price > 120) %>%
+  #Another way of arranging in descending order
+  arrange(-Price)
 
 
 # What were the missions that failed despite spending more than $120M on rockets?
@@ -102,8 +132,23 @@ space_mission_selected %>%
   arrange(Price)
 
 
+# What were the rockets launched that succeeded from the US Navy or the Sputnik-1 mission?
+library(stringr)
+# Usually this should be added on the top of the R source file
+
+space_mission_selected %>%
+  select(Rocket, Company, Mission, MissionStatus) %>% 
+  # Filter for Successful missions from the US Navy company or Sputnik-1 mission
+  filter((Company == "US Navy" | Mission == "Sputnik-1") & str_starts(MissionStatus, "S")) # str_starts contains samples of specified column that starts with the specified character/s
 
 
+# What were the rockets launched that failed and partially failed from the US Navy or NASA?
+space_mission_selected %>%
+  select(Rocket, Company, Mission, MissionStatus) %>% 
+  # Filter failed and partially failed missions from the US Navy or NASA
+  filter(Company %in% c("US Navy", "NASA") & str_detect(MissionStatus, "Failure")) %>% # str_detect obtains samples of specified column that contains the specified character/s
+  arrange(MissionStatus)
+  
 # 3. --- MUTATE ---
 
 # Mutate allows you to create new columns by specifying the name of the new column and its corresponding value
@@ -120,6 +165,21 @@ glimpse(space_mission_date_formatted)
 # Another way of taking a look at the dataset
 print(space_mission_date_formatted)
 
+# RECODING VARIABLE
+
+space_mission_selected <- space_mission_selected %>%
+  # Modify MissionStatus column based on conditions
+  mutate(MissionStatus = case_when(
+    # If MissionStatus is "Success", assign 1
+    MissionStatus == "Success" ~ 1,
+    # If MissionStatus contains "Failure", assign 0
+    str_detect(MissionStatus, "Failure") ~ 0,
+    # For other cases, assign NA
+    TRUE ~ NA_integer_
+  ))
+
+head(space_mission_selected)
+
 
 # What were the mission in the year 2000?
 
@@ -128,7 +188,6 @@ print(space_mission_date_formatted)
 # Lubridate is an R package that provides a comprehensive and user-friendly way to work with dates and times in R.
 library(lubridate) 
 # Usually this should be added on the top of the R source file
-
 
 space_mission_2000 <- space_mission_selected %>%
   filter(year(Date) == 2000) # year function is from lubridate not dplyr

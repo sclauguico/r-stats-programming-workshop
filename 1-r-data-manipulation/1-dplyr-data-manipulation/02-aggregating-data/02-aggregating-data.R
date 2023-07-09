@@ -11,14 +11,13 @@ setwd("C:/Users/sclau/Documents/r-stats-programming-workshop/1-r-data-manipulati
 airline_statisfaction <- read.csv("Airline+Passenger+Satisfaction/airline_passenger_satisfaction.csv")
 
 # Take a look at the dataset
+head(airline_satisfaction)
 glimpse(airline_statisfaction)
 airline_statisfaction <- na.omit(airline_statisfaction)
 
-# COUNT
+# 1. --- COUNT --- 
 # Count allows you to perform counting the number of values of a specific field
 
-
-# library(dplyr)
 
 # How many departures were delayed by minutes?
 airline_statisfaction %>%
@@ -29,7 +28,7 @@ airline_statisfaction %>%
 
 
 
-# SUMMARIZE
+# 2.--- SUMMARIZE --- 
 # Summarize allows you to collapse a large dataset to a single observation
 
 # What is the range of flight delays and average flight distance?
