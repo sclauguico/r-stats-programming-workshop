@@ -3,7 +3,8 @@ install.packages("dplyr")
 
 # Dplyr is a grammar of data manipulation in R that provides a consistent set of verbs 
 # to help you solve the most common data manipulation challenges.
-# Syntax: verb(parameters)
+# Syntax: tibble pipe-operator
+#             verb(parameters)
 
 library(dplyr) # for tabular data manipulation
 
