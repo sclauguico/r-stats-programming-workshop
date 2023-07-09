@@ -3,6 +3,7 @@ install.packages("dplyr")
 
 # Dplyr is a grammar of data manipulation in R that provides a consistent set of verbs 
 # to help you solve the most common data manipulation challenges.
+# Syntax: verb(parameters)
 
 library(dplyr) # for tabular data manipulation
 
@@ -93,6 +94,7 @@ space_mission_selected <- space_mission %>%
 names(space_mission) # For getting the column names
 
 space_mission %>%
+  # select the columns from the third to the seventh 
   select(3:7)
 
 # --- 2. FILTER and ARRANGE ---
@@ -165,7 +167,7 @@ glimpse(space_mission_date_formatted)
 # Another way of taking a look at the dataset
 print(space_mission_date_formatted)
 
-# RECODING VARIABLE
+# RECODING A VARIABLE
 
 space_mission_selected <- space_mission_selected %>%
   # Modify MissionStatus column based on conditions
@@ -193,8 +195,6 @@ space_mission_2000 <- space_mission_selected %>%
   filter(year(Date) == 2000) # year function is from lubridate not dplyr
 
 head(space_mission_2000)
-
-
 
 # What were the three most expensive rockets in 2000 and what are their equivalent prices in 2023?
 
