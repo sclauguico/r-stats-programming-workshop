@@ -146,6 +146,6 @@ airline_satisfaction %>%
   group_by(Customer.Type) %>%
   # Create a summarized/agrregated view 
   summarize(average_satisfaction = mean(Overall.Satisfaction)) %>%
-  # Sort descendingly by average satisfaction
+  # Sort in descending order by average satisfaction
   arrange(-average_satisfaction)
 

@@ -2,7 +2,7 @@
 install.packages("dplyr")
 
 library(dplyr) # for tabular data manipulation
-library(lubridate)
+library(lubridate) # for working with dates
 
 
 wd <- getwd()
