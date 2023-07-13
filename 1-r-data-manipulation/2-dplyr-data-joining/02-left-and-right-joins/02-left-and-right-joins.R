@@ -38,14 +38,14 @@ order_and_details_l <- order %>%
 
 View(order_and_details_l)
 # Notice how order_and_details_l have order_id, where it's not present on order_and_details
-# Notice also how order_id 2 has values from order but columns from order_detail are null
+# Notice also how order_id 2 and 6 have values from order but columns from order_detail are null
 # This is because we cannot match all the data from the right to the left
 
 
 
 # Join order_detail to order
 order %>%
-  left_join(order_detail, by ="order_id", relationship = "many-to-many") %>%
+  left_join(order_detail, by ="order_id") %>%
   # Filter for where quantity is na to show the sample that cannot be matched
   filter(is.na(quantity))
 
@@ -69,7 +69,7 @@ order_and_details_date_count <- order_and_details %>%
 
 head(order_and_details_date_count)
 
-# Notice how January 1 lacks 1 order count compared to order_and_details_l_date_count
+# Notice how January 1 lacks 2 order count compared to order_and_details_l_date_count
 
 
 
@@ -142,11 +142,11 @@ pizza_r_total_sales_by_pizza <- order_and_details_r %>%
 head(pizza_r_total_sales_by_pizza)
 View(pizza_r_total_sales_by_pizza)
 
-# Why are the The Big Meat Pizza, The Chicken Pesto Pizza, 
-# The Five Cheese Pizza, The Four Cheese Pizza, The Thai Chicken Pizza are null?
+# Why are the The Big Meat Pizza,
+# The Five Cheese Pizza, The Four Cheese Pizza are null?
 
 order_and_details_pizza_r <- order_and_details_r %>%
-  right_join(pizza, by = 'pizza_id')
+  right_join(pizza, by = 'pizza_id') 
 View(order_and_details_pizza_r)
 
 order_and_details_pizza_type_r <- order_and_details_pizza_r %>%
