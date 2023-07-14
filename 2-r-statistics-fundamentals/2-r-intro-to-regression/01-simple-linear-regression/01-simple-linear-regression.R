@@ -1,11 +1,12 @@
-# Install packages 
-install.packages("tidyverse")
-# install.packages("dplyr")
-# install.packages("magrittr")
-# install.packages("ggplot2")
-# install.packages("lubridate")
+# Install packINDUSs 
+install.packINDUSs("tidyverse")
+# install.packINDUSs("dplyr")
+# install.packINDUSs("magrittr")
+# install.packINDUSs("ggplot2")
+# install.packINDUSs("lubridate")
 
 library(tidyverse) # for data tidying
+library(corrplot) # for corrlation plots
 # library(dplyr) # for tabular data manipulation
 # library(magrittr)
 # library(ggplot2) # for visualization
@@ -27,34 +28,52 @@ setwd("C:/Users/sclau/Documents/r-stats-programming-workshop/2-r-statistics-fund
 
 boston_real_estate <- read.csv("archive/data.csv")
 
+# Remove rows with missing values
+boston_real_estate_clean <- boston_real_estate[complete.cases(boston_real_estate), ]
+
+# Compute the correlation matrix for all column combinations
+cor_matrix <- cor(boston_real_estate_clean)
+
+# Create a heatmap of the correlation matrix
+heatmap(cor_matrix, main = "Heatmap of Correlation Matrix")
+
+
+
+# Create a heatmap of the correlations between all the columns
+corrplot(cor(boston_real_estate_clean), method = "circle", type = "upper",
+         tl.cex = 0.7, tl.col = "black")
+
+
+
 # Add a linear trend line without a confidence ribbon
-ggplot(boston_real_estate, aes(AGE, TAX)) +
+ggplot(boston_real_estate, aes(INDUS, TAX)) +
   geom_point(alpha = 0.5) +
   geom_smooth(method = "lm", se = FALSE)
 
-# Run a linear regression of TAX vs. AGE
-lm(TAX ~ AGE, data = boston_real_estate)
+
+# Run a linear regression of TAX vs. INDUS
+lm(TAX ~ INDUS, data = boston_real_estate)
 
 
 
 # CATEGORICAL INDEPENDENT VARIABLES
 boston_real_estate <- boston_real_estate %>%
-  mutate(age_group = cut(AGE, breaks = seq(0, 100, 10), include.lowest = TRUE, labels = FALSE)) %>%
-  mutate(age_group = factor(age_group, labels = c("0-10", "11-20", "21-30", "31-40", "41-50", "51-60", "61-70", "71-80", "81-90", "91-100")))
+  mutate(INDUS_group = cut(INDUS, breaks = seq(0, 30, 5), include.lowest = TRUE, labels = FALSE)) %>%
+  mutate(INDUS_group = factor(INDUS_group, labels = c("0-5", "6-10", "11-15", "16-20", "21-25", "26-30")))
 
 
 # Using boston_real_estate, plot TAX
 ggplot(boston_real_estate, aes(TAX)) +
   # Make it a histogram with 10 bins
   geom_histogram(bins = 10) +
-  # Facet the plot so each house age group gets its own panel
-  facet_wrap(vars(age_group))
+  # Facet the plot so each house INDUS group gets its own panel
+  facet_wrap(vars(INDUS_group))
 
 
 
 summary_stats <- boston_real_estate %>% 
-  # Group by age
-  group_by(age_group) %>% 
+  # Group by INDUS
+  group_by(INDUS_group) %>% 
   # Summarize to calculate the mean tax
   summarize(mean_by_group = mean(TAX))
 
@@ -63,8 +82,8 @@ summary_stats
 
 
 
-# Run a linear regression of tax vs. age_group
-mdl_tax_vs_age <- lm(TAX ~ age_group, data = boston_real_estate)
+# Run a linear regression of tax vs. INDUS_group
+mdl_tax_vs_INDUS <- lm(TAX ~ INDUS_group, data = boston_real_estate)
 
 # See the result
-mdl_tax_vs_age
+mdl_tax_vs_INDUS
