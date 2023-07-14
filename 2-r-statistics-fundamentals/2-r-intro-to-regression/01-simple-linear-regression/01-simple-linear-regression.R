@@ -1,16 +1,15 @@
 # Install packages 
 install.packages("tidyverse")
-install.packages("dplyr")
-install.packages("magrittr")
-install.packages("ggplot2")
-install.packages("lubridate")
-
+# install.packages("dplyr")
+# install.packages("magrittr")
+# install.packages("ggplot2")
+# install.packages("lubridate")
 
 library(tidyverse) # for data tidying
-library(dplyr) # for tabular data manipulation
-library(magrittr)
-library(ggplot2) # for visualization
-library(lubridate) # for handling date fields
+# library(dplyr) # for tabular data manipulation
+# library(magrittr)
+# library(ggplot2) # for visualization
+# library(lubridate) # for handling date fields
 
 wd <- getwd()
 setwd("C:/Users/sclau/Documents/r-stats-programming-workshop/2-r-statistics-fundamentals/2-r-intro-to-regression/01-simple-linear-regression")
@@ -37,8 +36,8 @@ ggplot(boston_real_estate, aes(AGE, TAX)) +
 lm(TAX ~ AGE, data = boston_real_estate)
 
 
-# CATEGORICAL
 
+# CATEGORICAL INDEPENDENT VARIABLES
 boston_real_estate <- boston_real_estate %>%
   mutate(age_group = cut(AGE, breaks = seq(0, 100, 10), include.lowest = TRUE, labels = FALSE)) %>%
   mutate(age_group = factor(age_group, labels = c("0-10", "11-20", "21-30", "31-40", "41-50", "51-60", "61-70", "71-80", "81-90", "91-100")))
@@ -54,7 +53,7 @@ ggplot(boston_real_estate, aes(TAX)) +
 
 
 summary_stats <- boston_real_estate %>% 
-  # Group by house age
+  # Group by age
   group_by(age_group) %>% 
   # Summarize to calculate the mean tax
   summarize(mean_by_group = mean(TAX))
@@ -63,19 +62,9 @@ summary_stats <- boston_real_estate %>%
 summary_stats
 
 
+
 # Run a linear regression of tax vs. age_group
 mdl_tax_vs_age <- lm(TAX ~ age_group, data = boston_real_estate)
 
 # See the result
 mdl_tax_vs_age
-
-
-
-# Update the model formula so that no intercept is included in the model. Assign to mdl_price_vs_age_no_intercept
-
-# Run a linear regression of atx vs. age_group
-mdl_tax_vs_age <- lm(TAX ~ age_group + 0, data = boston_real_estate)
-
-# See the result
-mdl_tax_vs_age
-
