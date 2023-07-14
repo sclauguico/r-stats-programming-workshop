@@ -6,8 +6,7 @@ library(shiny) # for building the dashboard app
 library(ggplot2) # for visualization
 
 wd <- getwd()
-setwd("C:/Users/sclau/Documents/r-stats-programming-workshop/3-r-forecasting-and-business-intelligence/1-shiny-fundamentals/1-shiny-building-web-applications/01-get-started-with-shiny")
-
+setwd("C:/Users/sclau/Documents/r-stats-programming-workshop/3-r-forecasting-and-business-intelligence/1-shiny-fundamentals")
 
 # Creating the user interface (UI) for the Shiny app
 ui <- fluidPage(
