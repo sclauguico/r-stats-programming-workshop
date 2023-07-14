@@ -1,7 +1,7 @@
-install.packages("tidyverse")
-
-
-library(tidyverse)
+# install.packages("tidyverse")
+# 
+# 
+# library(tidyverse)
 
 wd <- getwd()
 setwd("C:/Users/sclau/Documents/r-stats-programming-workshop/2-r-statistics-fundamentals/3-r-hypothesis-testing/01-intro-to-hypothesis-testing")
@@ -9,9 +9,20 @@ setwd("C:/Users/sclau/Documents/r-stats-programming-workshop/2-r-statistics-fund
 # Load the customer churn csv file
 customer_churn <- read.csv("telecom_customer_churn.csv")
 
-# View the customer_churn dataset
+# View the unique_customer_churn dataset
 view(customer_churn)
 glimpse(customer_churn)
+
+# Get the unique Customer.Id values
+customer_churn %>% 
+  distinct(Customer.ID)
+
+
+unique_customer_churn <- customer_churn %>%
+  filter(Customer.Status %in% c("Stayed", "Churned")) %>%
+  distinct(Customer.ID, .keep_all = TRUE)
+
+View(unique_customer_churn)
 
 # Problem: The CEO of a telecommunication company had an initial guess that the churn rate among 
 # their customers was around 20% based on a sample data. However, being uncertain about the accuracy of this assumption, 
@@ -20,7 +31,7 @@ glimpse(customer_churn)
 # Calculate a point estimate (sample statistic). 
 # For this analysis, select the proportion of customer churn.
 # Percentage of those who churned of the total sample
-churned_prop_samp <- customer_churn %>%
+churned_prop_samp <- unique_customer_churn %>%
   summarize(prop_churned_customers = mean(Customer.Status == "Churned")) %>%
   # Extract the value from the dataframe
   pull(prop_churned_customers)
@@ -49,7 +60,9 @@ print(churned_prop_samp)
 
 # Let's make a hypothesis
 # Hypothesize that the proportion is 20%
-churned_prop_hyp <- 0.20
+churned_prop_hyp <- 0.2
+# A hypothesis is a statement about an unknown population parameter. This means that in the problem, the CEO made 
+# a guess about an unknown population, because he only looked at a sample.
 
 
 # To calculate the Z-Score, bootstrap resampling is an important step. 
@@ -66,15 +79,15 @@ churned_prop_hyp <- 0.20
 # variability and capturing the inherent randomness in the dataset.
 
 # Generate 1 bootstrap resample
-customer_churn_resample_1 <- customer_churn %>%
+unique_customer_churn_resample_1 <- unique_customer_churn %>%
   slice_sample(prop = churned_prop_samp, replace = TRUE)
 
 # Print the result
-View(customer_churn_resample_1)
+View(unique_customer_churn_resample_1)
 
 
 # Calculate mean churn prop of resample
-mean_churned_1 <- customer_churn_resample_1 %>% 
+mean_churned_1 <- unique_customer_churn_resample_1 %>% 
   summarize(mean_danceability = mean(Customer.Status == "Churned")) %>% 
   pull(mean_danceability)
 
@@ -82,7 +95,8 @@ mean_churned_1 <- customer_churn_resample_1 %>%
 print(mean_churned_1)
 
 
-# 1 resample is not enough. Let's have 1000 resamples and 
+# 1 resample is not enough. Let's have 1000 resamples to ensure that the data genarated are not just by chance.
+# The higher number of sampling the better, because of higher accuracy. But it can be computationally expensive.
 # compute the Churned proportion for every sample (mean of Churned Customers)
 
 
@@ -91,7 +105,7 @@ mean_churned_1000 <- replicate(
   n = 1000,
   expr = {
     # Resample the data
-    customer_churn_resample <- customer_churn %>% 
+    unique_customer_churn_resample <- unique_customer_churn %>% 
       slice_sample(prop = 1, replace = TRUE) %>% 
       # Calculate the summary stat
       summarize(mean_churned = mean(Customer.Status == "Churned")) %>% 
@@ -104,25 +118,25 @@ print(mean_churned_1000)
 
 
 # Store the resamples in a tibble
-customer_churn_boot_distn <- tibble(
+unique_customer_churn_boot_distn <- tibble(
   resample_mean = mean_churned_1000
 )
 
-print(customer_churn_boot_distn)
+print(unique_customer_churn_boot_distn)
 
 # Plot a histogram  of the resample means with binwidth 0.01
-customer_churn_boot_distn %>% 
+unique_customer_churn_boot_distn %>% 
   ggplot(aes(x = resample_mean)) +
   geom_histogram(binwidth = 0.002, fill = "royalblue4") +
   labs(x = "Mean Churned", y = "Frequency", title = "Distribution of Resampled Mean Churned")
 
 
-View(customer_churn_boot_distn)
+View(unique_customer_churn_boot_distn)
 
 
 # Now you can obtain no. 3 requirement for the z_score
 # Calculate the standard error, it is the standard deviation of the bootstrap distribution
-std_error <- customer_churn_boot_distn %>% 
+std_error <- unique_customer_churn_boot_distn %>% 
   summarize(sd_churned_prop = sd(resample_mean)) %>% 
   pull(sd_churned_prop)
 
@@ -140,8 +154,8 @@ z_score # Is this high or low?
 
 # Let's return to the customer churn dataset and the proportion of customer churn.
 
-# H0: The proportion of customer churn is 20 percent.
-# Ha: The proportion of customer churn is greater than 20 percent.
+# H0: The proportion of customer churn is 20 percent. <- Champion idea, Status Quo 
+# Ha: The proportion of customer churn is greater than 20 percent. <- Challenger idea 
 
 # The observed sample statistic, churned_prop_samp, 
 # The null hypothesis statistic, churned_prop_hyp (20%), 
@@ -156,10 +170,15 @@ p_value <- pnorm(z_score, lower.tail = FALSE)
 # Print the result
 print(p_value)   
 
+# How do you know if the p-value is small or large?
+
+# You can use a threshold called alpha. In most cases, it is 0.05. 0.01 and 0.1 are also popular.
+# But the choice of alpha depends on your study or use case.
+
 # Since the p_value is less than < 0.05, we can reject the H0 and accept Ha
 # The mean of 
 
-mean(customer_churn_boot_distn$resample_mean)
+mean(unique_customer_churn_boot_distn$resample_mean)
 
 # is significantly greater than the null hypothesis
 
@@ -175,10 +194,10 @@ mean(customer_churn_boot_distn$resample_mean)
 # 95% of the time the true proportion would fall within the range of 15% to 25%.
 
 # Calculate the confidence interval. Use the quantiles of the bootstrap distribution.
-
+# Choice of CI is depending on the alpha. It is equal to 1 -0.05, 0.95 or 95%
 
 # Calculate 95% confidence interval using quantile method
-conf_int_quantile <- customer_churn_boot_distn %>%
+conf_int_quantile <- unique_customer_churn_boot_distn %>%
   summarize(lower = quantile(resample_mean, 0.025),
             upper = quantile(resample_mean, 0.975)
   )
@@ -186,6 +205,6 @@ conf_int_quantile <- customer_churn_boot_distn %>%
 # Print the result
 conf_int_quantile
 
-# Here, we are 95% sure that the churn rate is from 25.6 to 27.5%
+# Here, we are 95% sure that the churn rate is from 27.3% to 29.5%
 # As a Data Scientist, you can tell tell the CEO's initial guess was wrong, and you're 95% certain that the customer
-# churn rate is 25.6% to 27.5%
+# churn rate is 27.3% to 29.5%
