@@ -1,6 +1,6 @@
 ## R Statistics Programming
 
-This repository contains the R Source Files for the Fundamentals of Statistics with R workshop I will be conducting at the De La Salle University - Manila on July 15, 2023
+This repository contains the R source files and the datasets used for the Statistics Prorgamming with R workshop I conducted at De La Salle University - Manila last July 15, 2023.
 
 I created these materials by combining my personal notes, style, and experiences with the following references, which I have rewritten, condensed, and expanded:
 
