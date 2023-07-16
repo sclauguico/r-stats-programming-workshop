@@ -104,8 +104,8 @@ airline_satisfaction %>%
   slice_max(Flight.Distance, n = 4) %>%
   # Show only customers who are 21 years old
   filter(Age == 21) %>%
-  # Sort by flight distance in desccending order
-  arrange(Flight.Distance)
+  # Sort by flight distance in descending order
+  arrange(desc(Flight.Distance))
 
 
 

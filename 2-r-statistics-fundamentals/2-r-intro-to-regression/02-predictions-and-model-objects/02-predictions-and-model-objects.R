@@ -101,7 +101,7 @@ glance(mdl_NOX_vs_DIS)
 
 
 
-#MANUAL PREDICTION
+# MANUAL PREDICTION
 
 # Get the coefficients of mdl_NOX_vs_DIS
 coeffs <- coefficients(mdl_NOX_vs_DIS)

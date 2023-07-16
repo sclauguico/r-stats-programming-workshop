@@ -36,7 +36,7 @@ head(space_mission)
 
 # B. REORDER VARIABLES
 space_mission_reordered <- space_mission %>%
-  select(Date, Mission, MissionStatus, Rocket, Price)
+  select(Date, Mission, MissionStatus, Price, Rocket)
 
 # C. CHANGE A VARIABLE TYPE
 # Take a look at the class of MissionStatus column
@@ -107,15 +107,15 @@ space_mission %>%
 # What were the missions with the most expensive rockets?
 space_mission_selected %>%
   # Add the verb arrange to order the price column in descending order
-  arrange(desc(Price)) 
+  arrange((Price)) 
 
 
 # What were the missions that spend more than $120M on rockets?
-space_mission_selected %>%
+View(space_mission_selected %>%
   # Add the verb filter to obtain the samples with rockets amounting above $120M
   filter(Price > 120) %>%
   #Another way of arranging in descending order
-  arrange(-Price)
+  arrange(-Price))
 
 
 # What were the missions that failed despite spending more than $120M on rockets?
@@ -184,7 +184,7 @@ space_mission_selected <- space_mission_selected %>%
 head(space_mission_selected)
 
 
-# What were the mission in the year 2000?
+# What were the missions in the year 2000?
 
 # Convert date column as date format
 
@@ -209,20 +209,22 @@ head(space_mission_2000)
 
 
 # What is the price rocket expense distribution? 
-# What missions are those with more than 20% of the distribution?
+# What missions are those with more than 2% of the distribution?
 
 # First we have to remove the null values
 space_mission_2000 <- na.omit(space_mission_2000)
 
 
-space_mission_2000 %>%
+x <- space_mission_2000 %>%
   # Select Mission, Missionstatus, Price
   select(Mission, MissionStatus, Price) %>%
   # Determine the distribution of price
   mutate(PriceDistribution = Price / sum(Price)) %>%
+  # Filter for PriceDistribution more than 2%
+  filter(PriceDistribution >= 0.1) %>%
   # Format the Price Distribution in percentages with two decimal places
   mutate(PriceDistribution = paste0(round(PriceDistribution * 100, 2), "%")) %>%
-  # Filter for PriceDistribution more than 2%
-  filter(PriceDistribution >= 0.02) %>%
   # Arrange distribution of rocket expenses in descending order
   arrange(desc(PriceDistribution))
+
+  
